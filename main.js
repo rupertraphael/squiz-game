@@ -42,13 +42,19 @@ class Question {
 class Quiz {
     questions = [];
 
+    get questions() {
+        return this.questions;
+    }
 
-    async fetch() {
+
+    async fetchQuestions() {
         const response = await fetch("https://opentdb.com/api.php?amount=10&type=multiple");
 
         const questions = await response.json();
         console.log(questions);
         this.rawQuestionsToQuestions(questions.results);
+
+        return this;
     }
 
     rawQuestionToQuestion(obj) {
@@ -64,16 +70,26 @@ class Quiz {
         return question;
     }
 
-    rawQuestionsToQuestions(rawQuestions) {
-        let questions = [];
-        
+    rawQuestionsToQuestions(rawQuestions) {        
         for (const rawQuestion of rawQuestions) {
-            questions.push(this.rawQuestionToQuestion(rawQuestion));
+            this.questions.push(this.rawQuestionToQuestion(rawQuestion));
         }
-
-        console.log(questions);
     }
 }
 
-let quiz = new Quiz();
-quiz.fetch();
+const quiz = new Quiz();
+quiz.fetchQuestions().then(quiz => {
+    // populate choices dom
+    const choiceButtonTemplate = document.querySelector("#choice-button-template");
+    const choicesSection = document.querySelector("#choices-section");
+    const questionHeader = document.querySelector("#question");
+
+    questionHeader.textContent = quiz.questions[0].question;
+
+    for (const choice of quiz.questions[0].choices) {
+        const choiceButtonInstance = choiceButtonTemplate.content.cloneNode(true);
+        choiceButtonInstance.querySelector("button").textContent = choice;
+
+        choicesSection.appendChild(choiceButtonInstance);
+    }
+});
