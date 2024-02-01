@@ -1,3 +1,11 @@
+// From: https://stackoverflow.com/a/65592593
+// hacky but it works on code meant for the browser.
+function decodeHTMLEntities(text) {
+    const textArea = document.createElement('textarea');
+    textArea.innerHTML = text;
+    return textArea.value;
+  }
+
 class Question {
     no_answer = -1;
     question = "";
@@ -51,6 +59,9 @@ class Quiz {
         yield this.questions[this.question_number++];
     }
 
+    check(question, answer) {
+        question.check(answer);
+    }
 
     async fetchQuestions() {
         const response = await fetch("https://opentdb.com/api.php?amount=10&type=multiple");
@@ -83,20 +94,47 @@ class Quiz {
 }
 
 const quiz = new Quiz();
-quiz.fetchQuestions().then(quiz => {
-    // populate choices dom
+
+function handleAnswer(e) {
+    answer = e.target.value;
+    this.check(answer);
+
+    runQuiz(quiz);
+}
+
+function displayChoices(question) {
     const choiceButtonTemplate = document.querySelector("#choice-button-template");
     const choicesSection = document.querySelector("#choices-section");
-    const questionHeader = document.querySelector("#question");
 
-    currentQuestion = quiz.question().next().value;
+    while(choicesSection.hasChildNodes()) {
+        choicesSection.removeChild(choicesSection.firstChild);
+    }
 
-    questionHeader.textContent = currentQuestion.question;
-
-    for (const choice of currentQuestion.choices) {
+    for (const choice of question.choices) {
         const choiceButtonInstance = choiceButtonTemplate.content.cloneNode(true);
-        choiceButtonInstance.querySelector("button").textContent = choice;
+        const button = choiceButtonInstance.querySelector("button");
+        button.textContent = decodeHTMLEntities(choice);
+        button.value = choice;
+        button.addEventListener("click", handleAnswer.bind(question));
 
         choicesSection.appendChild(choiceButtonInstance);
     }
+}
+
+function displayQuestion(question) {
+    const questionHeader = document.querySelector("#question");
+    questionHeader.textContent = decodeHTMLEntities(question.question);
+}
+
+function askQuestion(question) {
+    displayQuestion(question);
+    displayChoices(question);
+}
+
+function runQuiz(quiz) {
+    askQuestion(quiz.question().next().value);
+}
+
+quiz.fetchQuestions().then(quiz => {
+    runQuiz(quiz);
 });
