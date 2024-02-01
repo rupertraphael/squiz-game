@@ -4,7 +4,7 @@ function decodeHTMLEntities(text) {
     const textArea = document.createElement('textarea');
     textArea.innerHTML = text;
     return textArea.value;
-  }
+}
 
 class Question {
     no_answer = -1;
@@ -63,6 +63,46 @@ class Quiz {
         question.check(answer);
     }
 
+    handleAnswer(e) {
+        answer = e.target.value;
+        this.check(answer);
+    }
+
+    displayChoices(question) {
+        const choiceButtonTemplate = document.querySelector("#choice-button-template");
+        const choicesSection = document.querySelector("#choices-section");
+    
+        while(choicesSection.hasChildNodes()) {
+            choicesSection.removeChild(choicesSection.firstChild);
+        }
+    
+        for (const choice of question.choices) {
+            const choiceButtonInstance = choiceButtonTemplate.content.cloneNode(true);
+            const button = choiceButtonInstance.querySelector("button");
+            button.textContent = decodeHTMLEntities(choice);
+            button.value = choice;
+            button.addEventListener("click", handleAnswer.bind(question));
+    
+            choicesSection.appendChild(choiceButtonInstance);
+        }
+    }
+    
+    displayQuestion(question) {
+        const questionHeader = document.querySelector("#question");
+        questionHeader.textContent = decodeHTMLEntities(question.question);
+    }
+    
+    askQuestion(question) {
+        displayQuestion(question);
+        displayChoices(question);
+    }
+
+    run() {
+        this.fetchQuestions().then(() => {
+            this.askQuestion(this.question().next().value);
+        });
+    }
+
     async fetchQuestions() {
         const response = await fetch("https://opentdb.com/api.php?amount=10&type=multiple");
 
@@ -94,47 +134,4 @@ class Quiz {
 }
 
 const quiz = new Quiz();
-
-function handleAnswer(e) {
-    answer = e.target.value;
-    this.check(answer);
-
-    runQuiz(quiz);
-}
-
-function displayChoices(question) {
-    const choiceButtonTemplate = document.querySelector("#choice-button-template");
-    const choicesSection = document.querySelector("#choices-section");
-
-    while(choicesSection.hasChildNodes()) {
-        choicesSection.removeChild(choicesSection.firstChild);
-    }
-
-    for (const choice of question.choices) {
-        const choiceButtonInstance = choiceButtonTemplate.content.cloneNode(true);
-        const button = choiceButtonInstance.querySelector("button");
-        button.textContent = decodeHTMLEntities(choice);
-        button.value = choice;
-        button.addEventListener("click", handleAnswer.bind(question));
-
-        choicesSection.appendChild(choiceButtonInstance);
-    }
-}
-
-function displayQuestion(question) {
-    const questionHeader = document.querySelector("#question");
-    questionHeader.textContent = decodeHTMLEntities(question.question);
-}
-
-function askQuestion(question) {
-    displayQuestion(question);
-    displayChoices(question);
-}
-
-function runQuiz(quiz) {
-    askQuestion(quiz.question().next().value);
-}
-
-quiz.fetchQuestions().then(quiz => {
-    runQuiz(quiz);
-});
+quiz.run();
