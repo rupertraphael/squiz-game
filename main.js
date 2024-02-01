@@ -59,16 +59,15 @@ class Quiz {
         yield this.questions[this.question_number++];
     }
 
+    currentQuestion() {
+        return this.questions[this.question_number];
+    }
+
     check(question, answer) {
-        question.check(answer);
+        return question.check(answer);
     }
 
-    handleAnswer(e) {
-        answer = e.target.value;
-        this.check(answer);
-    }
-
-    displayChoices(question) {
+    displayChoices(question, answerHandler) {
         const choiceButtonTemplate = document.querySelector("#choice-button-template");
         const choicesSection = document.querySelector("#choices-section");
     
@@ -81,7 +80,7 @@ class Quiz {
             const button = choiceButtonInstance.querySelector("button");
             button.textContent = decodeHTMLEntities(choice);
             button.value = choice;
-            button.addEventListener("click", handleAnswer.bind(question));
+            button.addEventListener("click", answerHandler.bind(this, question));
     
             choicesSection.appendChild(choiceButtonInstance);
         }
@@ -91,15 +90,26 @@ class Quiz {
         const questionHeader = document.querySelector("#question");
         questionHeader.textContent = decodeHTMLEntities(question.question);
     }
+
+    handleAnswer(question, event) {
+        if(this.check(question, event.target.value)) {
+            alert('right!');
+        } else {
+            alert('wrong!');
+        }
+        this.askQuestion();
+    }
     
-    askQuestion(question) {
-        displayQuestion(question);
-        displayChoices(question);
+    askQuestion() {
+        const question = this.question().next().value;
+
+        this.displayQuestion(question);
+        this.displayChoices(question, this.handleAnswer);
     }
 
     run() {
         this.fetchQuestions().then(() => {
-            this.askQuestion(this.question().next().value);
+            this.askQuestion();
         });
     }
 
