@@ -41,9 +41,14 @@ class Question {
 
 class Quiz {
     questions = [];
+    question_number = 0;
 
     get questions() {
         return this.questions;
+    }
+
+    * question() {
+        yield this.questions[this.question_number++];
     }
 
 
@@ -84,9 +89,11 @@ quiz.fetchQuestions().then(quiz => {
     const choicesSection = document.querySelector("#choices-section");
     const questionHeader = document.querySelector("#question");
 
-    questionHeader.textContent = quiz.questions[0].question;
+    currentQuestion = quiz.question().next().value;
 
-    for (const choice of quiz.questions[0].choices) {
+    questionHeader.textContent = currentQuestion.question;
+
+    for (const choice of currentQuestion.choices) {
         const choiceButtonInstance = choiceButtonTemplate.content.cloneNode(true);
         choiceButtonInstance.querySelector("button").textContent = choice;
 
