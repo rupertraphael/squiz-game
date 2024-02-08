@@ -1,0 +1,12 @@
+button {
+    border: 1px solid black;
+    background-color: white;
+}
+
+button.wrong-choice {
+    border: 1px solid red;
+}
+
+button.correct-choice {
+    border: 1px solid green;
+}

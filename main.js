@@ -89,10 +89,24 @@ class Quiz {
     }
 
     handleAnswer(question, event) {
-        if(this.check(question, event.target.value)) {
-            this.score += 10;
+        console.log(this);
+
+        const choicesSection = document.querySelector("#choices-section");
+        for (const button of choicesSection.children) {
+            console.log(button.disabled);
+            button.disabled = true;
         }
-        this.run();
+
+        if(this.check(question, event.target.value)) {
+            event.target.classList.add("correct-choice");
+            this.score += 10;
+        } else {
+            event.target.classList.add("wrong-choice");
+        }
+        
+        setTimeout(() => {
+            this.run();
+        }, 1500);
     }
     
     askQuestion(question) {
