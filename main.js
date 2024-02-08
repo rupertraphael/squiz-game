@@ -50,6 +50,7 @@ class Question {
 class Quiz {
     questions = [];
     question_number = 0;
+    score = 0;
 
     get questions() {
         return this.questions;
@@ -57,10 +58,6 @@ class Quiz {
 
     * question() {
         yield this.questions[this.question_number++];
-    }
-
-    currentQuestion() {
-        return this.questions[this.question_number];
     }
 
     check(question, answer) {
@@ -93,24 +90,30 @@ class Quiz {
 
     handleAnswer(question, event) {
         if(this.check(question, event.target.value)) {
-            alert('right!');
-        } else {
-            alert('wrong!');
+            this.score += 10;
         }
-        this.askQuestion();
+        this.run();
     }
     
-    askQuestion() {
-        const question = this.question().next().value;
+    askQuestion(question) {
+        const questionNumberElement = document.querySelector("#question_number");
+        questionNumberElement.textContent = this.question_number;
+
+        const scoreElement = document.querySelector("#score");
+        scoreElement.textContent = this.score;
 
         this.displayQuestion(question);
         this.displayChoices(question, this.handleAnswer);
     }
 
     run() {
-        this.fetchQuestions().then(() => {
-            this.askQuestion();
-        });
+        if(this.questions[this.question_number] === undefined) {
+            this.fetchQuestions().then(() => {
+                this.askQuestion(this.question().next().value);
+            });
+        } else {
+            this.askQuestion(this.question().next().value);
+        }
     }
 
     async fetchQuestions() {
