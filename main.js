@@ -95,6 +95,10 @@ class Quiz {
         for (const button of choicesSection.children) {
             console.log(button.disabled);
             button.disabled = true;
+
+            if(this.check(question, button.value)) {
+                button.classList.add("correct-choice");
+            }
         }
 
         if(this.check(question, event.target.value)) {
