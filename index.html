@@ -16,14 +16,30 @@
         </div>
         <div>
             <label for="score">Score: </label>
-            <span id="score">1</span>
+            <span id="score">0</span>
         </div>
         <h1 id="question">Loading Question...</h1>
+        <label for="question-difficulty">Difficulty: </label>
+        <span id="question-difficulty"></span>
     </section>
     <section id="choices-section">
     </section>
+    <section id="score-history-section">
+        <ol>
+            <li>
+                <label>Question: </label>
+                <span>+20</span>
+            </li>
+        </ol>
+    </section>
     <template id="choice-button-template">
         <button>Choice</button>
+    </template>
+    <template id="score-history-list-item">
+        <li>
+            <label>Question: </label>
+            <span>+20</span>
+        </li>
     </template>
 </body>
 </html>

@@ -7,10 +7,13 @@ function decodeHTMLEntities(text) {
 }
 
 class Question {
+    static easy = 'easy';
+    static medium = 'medium';
+    static hard = 'hard';
     no_answer = -1;
     question = "";
     difficulty = "";
-    choices = [];
+    _choices = [];
     answer = this.no_answer;
 
     set question(question) {
@@ -21,16 +24,20 @@ class Question {
         this.difficulty = difficulty;
     }
 
-
-    set choices(choices) {
-        this.choices = [];
-
-        this.choices.push(...choices);
+    addChoice(choice) {
+        this._choices.push(choice);
     }
 
-    // TODO: randomize order
+    set choices(choices) {
+        this._choices = [];
+        this._choices.push(...choices);
+    }
     get choices() {
-
+        // from: https://stackoverflow.com/a/46545530
+        return (this._choices
+            .map(value => ({ value, sort: Math.random() }))
+            .sort((a, b) => a.sort - b.sort)
+            .map(({ value }) => value));
     }
 
     set answer(answer) {
@@ -50,7 +57,9 @@ class Question {
 class Quiz {
     questions = [];
     question_number = 0;
+    questions_difficulty = Question.easy;
     score = 0;
+    difficulty_streak = 0;
 
     get questions() {
         return this.questions;
@@ -85,17 +94,18 @@ class Quiz {
     
     displayQuestion(question) {
         const questionHeader = document.querySelector("#question");
+        const questionDifficulty = document.querySelector("#question-difficulty");
         questionHeader.textContent = decodeHTMLEntities(question.question);
+        questionDifficulty.textContent = decodeHTMLEntities(question.difficulty);
+    }
+
+    addScore() {
+        this.score += 10;
     }
 
     handleAnswer(question, event) {
-        console.log(this);
-
         const choicesSection = document.querySelector("#choices-section");
         for (const button of choicesSection.children) {
-            console.log(button.disabled);
-            button.disabled = true;
-
             if(this.check(question, button.value)) {
                 button.classList.add("correct-choice");
             }
@@ -103,7 +113,8 @@ class Quiz {
 
         if(this.check(question, event.target.value)) {
             event.target.classList.add("correct-choice");
-            this.score += 10;
+            this.addScore();
+            this.difficulty_streak++;
         } else {
             event.target.classList.add("wrong-choice");
         }
@@ -124,22 +135,37 @@ class Quiz {
         this.displayChoices(question, this.handleAnswer);
     }
 
+    nextQuestion() {
+        this.askQuestion(this.question().next().value);
+    }
+
     run() {
         if(this.questions[this.question_number] === undefined) {
+            if(this.difficulty_streak > 3) {
+                this.questions_difficulty = Question.hard;
+            } else if (this.difficulty_streak > 1) {
+                this.questions_difficulty = Question.medium;
+            } else {
+                this.questions_difficulty = Question.easy;
+            }
+            console.log(this.questions_difficulty);
+            this.difficulty_streak = 0;
             this.fetchQuestions().then(() => {
-                this.askQuestion(this.question().next().value);
+                this.nextQuestion();
             });
         } else {
-            this.askQuestion(this.question().next().value);
+            this.nextQuestion();
         }
     }
 
     async fetchQuestions() {
-        const response = await fetch("https://opentdb.com/api.php?amount=10&type=multiple");
+        const amount = 5;
+        const response = await fetch(`https://opentdb.com/api.php?amount=${amount}&type=multiple&difficulty=${this.questions_difficulty}`);
 
         const questions = await response.json();
-        console.log(questions);
         this.rawQuestionsToQuestions(questions.results);
+
+        console.log(this.questions);
 
         return this;
     }
@@ -150,8 +176,8 @@ class Quiz {
         question.difficulty = obj.difficulty;
 
         // add choices
-        question.choices.push(...obj.incorrect_answers);
-        question.choices.push(obj.correct_answer);
+        question.choices = obj.incorrect_answers;
+        question.addChoice(obj.correct_answer);
         question.answer = obj.correct_answer;
 
         return question;
@@ -165,4 +191,8 @@ class Quiz {
 }
 
 const quiz = new Quiz();
-quiz.run();
+document.addEventListener("DOMContentLoaded", (event) => {
+    quiz.fetchQuestions().then(() => {
+        quiz.nextQuestion();
+    });    
+});
