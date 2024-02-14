@@ -5,8 +5,12 @@ button {
 
 button.wrong-choice {
     border: 1px solid red;
+    background-color: lightpink;
+    color: red;
 }
 
 button.correct-choice {
     border: 1px solid green;
+    background-color: lightgreen;
+    color: green;
 }

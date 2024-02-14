@@ -54,12 +54,43 @@ class Question {
 
 }
 
+class User {
+    score = 0;
+
+    addToScore(question) {
+        this.score += 10;
+
+        const scoreElement = document.querySelector("#score");
+        scoreElement.textContent = this.score;
+        
+        this.addToHistory(question);
+    }
+
+    addToHistory(question) {
+        const itemTemplate = document.querySelector("#score-history-list-item");
+        const list = document.querySelector("#score-history-list");
+        const itemInstance = itemTemplate.content.cloneNode(true);
+
+        const listItem = itemInstance.querySelector("li");
+        const label = listItem.querySelector('label'); 
+        const score = listItem.querySelector('span');
+        label.textContent = decodeHTMLEntities(question.question);
+        score.textContent = "+10";
+        list.appendChild(listItem);
+    }
+}
+
 class Quiz {
     questions = [];
     question_number = 0;
     questions_difficulty = Question.easy;
     score = 0;
     difficulty_streak = 0;
+    user = null;
+
+    constructor(user) {
+        this.user = user;
+    }
 
     get questions() {
         return this.questions;
@@ -99,8 +130,8 @@ class Quiz {
         questionDifficulty.textContent = decodeHTMLEntities(question.difficulty);
     }
 
-    addScore() {
-        this.score += 10;
+    addToScore(question) {
+        this.user.addToScore(question);
     }
 
     handleAnswer(question, event) {
@@ -113,7 +144,7 @@ class Quiz {
 
         if(this.check(question, event.target.value)) {
             event.target.classList.add("correct-choice");
-            this.addScore();
+            this.addToScore(question);
             this.difficulty_streak++;
         } else {
             event.target.classList.add("wrong-choice");
@@ -127,9 +158,6 @@ class Quiz {
     askQuestion(question) {
         const questionNumberElement = document.querySelector("#question_number");
         questionNumberElement.textContent = this.question_number;
-
-        const scoreElement = document.querySelector("#score");
-        scoreElement.textContent = this.score;
 
         this.displayQuestion(question);
         this.displayChoices(question, this.handleAnswer);
@@ -190,7 +218,7 @@ class Quiz {
     }
 }
 
-const quiz = new Quiz();
+const quiz = new Quiz(new User());
 document.addEventListener("DOMContentLoaded", (event) => {
     quiz.fetchQuestions().then(() => {
         quiz.nextQuestion();
