@@ -6,6 +6,50 @@ function decodeHTMLEntities(text) {
     return textArea.value;
 }
 
+function defaultCallback(customElementID) {
+    let template = document.getElementById(customElementID);
+    let templateContent = template.content;
+
+    const shadowRoot = this.attachShadow({ mode: "open" });
+    shadowRoot.appendChild(templateContent.cloneNode(true));
+}
+
+customElements.define(
+    "choice-button",
+    class extends HTMLElement {
+        static get observedAttributes() {
+            return ["is-correct", "disabled"];
+        }
+
+        constructor() {
+            super();
+        }
+
+        connectedCallback() {
+            defaultCallback.call(this, "choice-button-template");
+        }
+
+        attributeChangedCallback(name, oldValue, newValue) {
+            const button = this.shadowRoot.querySelector("button");
+
+            if(name === "disabled") {
+                button.setAttribute("disabled", "");
+            } else if(name === "is-correct") {
+                console.log(this.value);
+                console.log(newValue);
+
+                if(newValue == "false") {
+                    button.classList.remove("correct-choice");
+                    button.classList.add("wrong-choice");
+                } else {
+                    button.classList.remove("wrong-choice");
+                    button.classList.add("correct-choice");
+                }
+            }
+        }
+    },
+  );
+
 class Question {
     static easy = 'easy';
     static medium = 'medium';
@@ -113,13 +157,12 @@ class Quiz {
         }
     
         for (const choice of question.choices) {
-            const choiceButtonInstance = choiceButtonTemplate.content.cloneNode(true);
-            const button = choiceButtonInstance.querySelector("button");
+            const button = document.createElement("choice-button");
             button.textContent = decodeHTMLEntities(choice);
             button.value = choice;
-            button.addEventListener("click", answerHandler.bind(this, question));
+            button.addEventListener("click", answerHandler.bind(this, question));            
     
-            choicesSection.appendChild(choiceButtonInstance);
+            choicesSection.appendChild(button);
         }
     }
     
@@ -137,17 +180,19 @@ class Quiz {
     handleAnswer(question, event) {
         const choicesSection = document.querySelector("#choices-section");
         for (const button of choicesSection.children) {
+            button.setAttribute("disabled", "");
+
             if(this.check(question, button.value)) {
-                button.classList.add("correct-choice");
+                button.setAttribute("is-correct", true);
             }
         }
 
         if(this.check(question, event.target.value)) {
-            event.target.classList.add("correct-choice");
+            event.target.setAttribute("is-correct", true);
             this.addToScore(question);
             this.difficulty_streak++;
         } else {
-            event.target.classList.add("wrong-choice");
+            event.target.setAttribute("is-correct", false);
         }
         
         setTimeout(() => {

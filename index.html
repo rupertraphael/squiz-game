@@ -18,9 +18,13 @@
             <label for="score">Score: </label>
             <span id="score">0</span>
         </div>
-        <h1 id="question">Loading Question...</h1>
-        <label for="question-difficulty">Difficulty: </label>
-        <span id="question-difficulty"></span>
+        <div id="question-container">
+            <div>
+                <h1 id="question">Loading Question...</h1>
+                <label for="question-difficulty">Difficulty: </label>
+                <span id="question-difficulty"></span>
+            </div>
+        </div>
     </section>
     <section id="choices-section">
     </section>
@@ -29,7 +33,22 @@
         </ol>
     </section>
     <template id="choice-button-template">
-        <button>Choice</button>
+        <style>
+            button.wrong-choice {
+                border: 1px solid red;
+                background-color: lightpink;
+                color: red;
+            }
+
+            button.correct-choice {
+                border: 1px solid green;
+                background-color: lightgreen;
+                color: green;
+            }
+        </style>
+        <button>
+            <div><slot>Choice</slot></div>
+        </button>
     </template>
     <template id="score-history-list-item">
         <li>

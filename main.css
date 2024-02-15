@@ -1,6 +1,6 @@
-button {
-    border: 1px solid black;
-    background-color: white;
+body {
+    /* background-color: darkblue; */
+    font-family: sans-serif;
 }
 
 button.wrong-choice {
@@ -14,3 +14,41 @@ button.correct-choice {
     background-color: lightgreen;
     color: green;
 }
+/* 
+#question-container {
+    background: linear-gradient(to right, yellow, violet);
+    padding: 1rem;
+    font-style: italic;
+}
+
+#question-container > div {
+    background-color: darkblue;
+    color: white;
+    height: 100%;
+}
+
+#choices-section {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    grid-auto-flow: column;
+}
+
+#choices-section > button {
+    background: linear-gradient(to right, yellow, violet);
+    padding: 0.25rem;
+    border-radius: 1.75rem 0 1.75rem 0;
+}
+
+#choices-section > button > div {
+    display: block;
+    width: 100%;
+    padding: 1rem 2rem;
+    font-size: 1.5rem;
+    background-color: darkblue;
+    color: white;
+    border: none;
+    font-weight: bold;
+    border-radius: 1.5rem 0 1.5rem 0;
+} */
