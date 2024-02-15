@@ -9,20 +9,29 @@
     <script src='main.js'></script>
 </head>
 <body>
+    <header>
+        <div id="question-number-container" class="pill">
+            <div>
+                <label for="question_number">Question Number </label>
+                <span id="question_number">1</span>
+            </div>
+            <div>
+                <span id="question-difficulty"></span>
+            </div>
+        </div>
+        <div class="pill pill-green">
+            <div>
+                <label for="score">Score: </label>
+            </div>
+            <div>
+                <span id="score">0</span>
+            </div>
+        </div>
+    </header>
     <section>
-        <div>
-            <label for="question_number">Question Number </label>
-            <span id="question_number">1</span>
-        </div>
-        <div>
-            <label for="score">Score: </label>
-            <span id="score">0</span>
-        </div>
         <div id="question-container">
             <div>
                 <h1 id="question">Loading Question...</h1>
-                <label for="question-difficulty">Difficulty: </label>
-                <span id="question-difficulty"></span>
             </div>
         </div>
     </section>
@@ -34,16 +43,44 @@
     </section>
     <template id="choice-button-template">
         <style>
+            button {
+                background: linear-gradient(to right, yellow, violet);
+                padding: 0.25rem;
+                border-radius: 1.75rem 0 1.75rem 0;
+                width: 100%;
+            }
+
+            button:hover > div {
+                background: blue;
+            }
+
+            button > div {
+                display: block;
+                padding: 1rem 2rem;
+                font-size: 1.5rem;
+                background-color: darkblue;
+                color: white;
+                border: none;
+                font-weight: bold;
+                border-radius: 1.5rem 0 1.5rem 0;
+            }
+
             button.wrong-choice {
-                border: 1px solid red;
-                background-color: lightpink;
-                color: red;
+                background: lightpink;
+            }
+
+            button.wrong-choice > div {
+                background-color: red;
+                color: lightpink;
             }
 
             button.correct-choice {
-                border: 1px solid green;
-                background-color: lightgreen;
-                color: green;
+                background: yellow;
+            }
+
+            button.correct-choice > div {
+                background-color: green;
+                color: yellow;
             }
         </style>
         <button>

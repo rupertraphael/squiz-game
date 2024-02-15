@@ -1,24 +1,50 @@
 body {
-    /* background-color: darkblue; */
+    background-color: darkblue;
     font-family: sans-serif;
 }
 
-button.wrong-choice {
-    border: 1px solid red;
-    background-color: lightpink;
-    color: red;
+header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
 }
 
-button.correct-choice {
-    border: 1px solid green;
-    background-color: lightgreen;
-    color: green;
+.pill {
+    background-color: white;
+    display: inline-block;
+    border-radius: 0.5rem;
 }
-/* 
+
+.pill > div {
+    display: inline-block;
+    margin: 0;
+    padding: 0.5rem;
+}
+
+.pill > div:last-child {
+    color: white;
+    background-color: darkorange;
+    border-radius: 0 0.5rem 0.5rem 0;
+    text-transform: capitalize;
+}
+
+.pill.pill-green > div:last-child {
+    background-color: darkgreen;
+}
+
 #question-container {
     background: linear-gradient(to right, yellow, violet);
-    padding: 1rem;
+    padding: 0.5rem;
     font-style: italic;
+    margin-bottom: 2rem;
+}
+
+#question-container h1 {
+    margin: 0px auto;
+    padding: 1rem;
+    width: 80%;
+    font-size: 2rem;
 }
 
 #question-container > div {
@@ -29,26 +55,23 @@ button.correct-choice {
 
 #choices-section {
     display: grid;
-    grid-template-rows: 1fr 1fr;
-    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
     grid-auto-flow: column;
 }
 
-#choices-section > button {
-    background: linear-gradient(to right, yellow, violet);
-    padding: 0.25rem;
-    border-radius: 1.75rem 0 1.75rem 0;
+#score-history-section {
+    color: white;
 }
 
-#choices-section > button > div {
-    display: block;
-    width: 100%;
-    padding: 1rem 2rem;
-    font-size: 1.5rem;
-    background-color: darkblue;
-    color: white;
-    border: none;
-    font-weight: bold;
-    border-radius: 1.5rem 0 1.5rem 0;
-} */
+@media only screen and (max-width: 400px) {
+    .pill > div{
+        display: block;
+        text-align: center;
+    }
+
+    .pill > div:last-child {
+        border-radius: 0 0 0.5rem 0.5rem;
+    }
+  }
