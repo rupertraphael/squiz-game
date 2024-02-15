@@ -56,7 +56,7 @@ class Question {
     static hard = 'hard';
     no_answer = -1;
     question = "";
-    difficulty = "";
+    difficulty = "none";
     _choices = [];
     answer = this.no_answer;
 
@@ -231,6 +231,10 @@ class Quiz {
         }
     }
 
+    showError() {
+
+    }
+
     async fetchQuestions() {
         const amount = 5;
         const response = await fetch(`https://opentdb.com/api.php?amount=${amount}&type=multiple&difficulty=${this.questions_difficulty}`);
@@ -264,8 +268,16 @@ class Quiz {
 }
 
 const quiz = new Quiz(new User());
-document.addEventListener("DOMContentLoaded", (event) => {
-    quiz.fetchQuestions().then(() => {
-        quiz.nextQuestion();
-    });    
-});
+
+const initialLoad = function (event){
+    quiz.fetchQuestions().then(
+        () => {
+            quiz.nextQuestion();
+        }, 
+        () => {
+            setTimeout(initialLoad, 5000);
+        }
+    )
+};
+
+document.addEventListener("DOMContentLoaded", initialLoad);
